@@ -11,7 +11,7 @@ Most concurrency examples show toy thread pools or basic async/await. This repo 
 - **10M+ daily transaction aggregations** with checkpointing and crash recovery
 - **Distributed request tracing** across async tasks, processes, and Redis operations
 
-Every pattern here was extracted from production Python/Tornado code and reimplemented in **idiomatic C# .NET Core** with full async/await support.
+Every pattern here was extracted from real-world production experience and reimplemented in **idiomatic C# .NET Core** with full async/await support.
 
 ---
 
@@ -341,20 +341,9 @@ dotnet run
 
 ---
 
-## Original Python Code References
-
-All patterns were extracted from:
-- **Process Sharding**: [`time_out_v2.py`](https://github.com/internal/ospay/jobs/time_out_v2.py) (lines 400-500)
-- **Async Pipeline**: [`batch_deduct_balance.py`](https://github.com/internal/ospay/jobs/batch_deduct_balance.py)
-- **TraceID Correlation**: [`time_out_v2.py`](https://github.com/internal/ospay/jobs/time_out_v2.py) (lines 1-50, TraceIDFilter)
-- **Post-Commit Tasks**: [`base.py`](https://github.com/internal/ospay/application/base.py) (lines 200-300, _POST_COMMIT_TASKS)
-
----
-
 ## Author
 
-Ray Li — Senior Software Engineer, 15+ years building financial transaction systems.  
-AWS Certified DevOps Engineer – Professional.
+Ray Li — Senior Software Engineer, 15+ years building financial transaction systems.
 
 ---
 

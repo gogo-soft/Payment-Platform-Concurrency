@@ -1,54 +1,10 @@
 # TraceID Correlation Pattern
 
-## Real Scenario (Production Python Code)
+## Real Scenario (Production Experience)
 
 In a distributed payment platform with async tasks, multi-process workers, and Redis operations, tracking a single request through the entire chain is crucial for debugging.
 
-### The Original Python Implementation
-
-```python
-# From: time_out_v2.py (Production Code)
-
-class TraceIDFilter(logging.Filter):
-    """TraceID filter for tracking request chains across concurrent tasks"""
-    def __init__(self):
-        super().__init__()
-        self._local = threading.local()
-
-    @property
-    def trace_id(self):
-        return getattr(self._local, 'trace_id', 'default')
-
-    @trace_id.setter
-    def trace_id(self, value):
-        self._local.trace_id = value
-
-    def filter(self, record):
-        record.trace_id = self.trace_id
-        
-        # Add task ID for concurrent task tracking
-        try:
-            task = asyncio.current_task()
-            if task:
-                record.task_id = f"task_{id(task) % 10000:04d}"
-            else:
-                record.task_id = "sync"
-        except RuntimeError:
-            record.task_id = "sync"
-        
-        return True
-
-# Enhanced logging format with TraceID and TaskID
-format_str = '%(asctime)s - [PID:%(process)d] [%(trace_id)s] [%(task_id)s] - %(levelname)s - %(message)s'
-formatter = logging.Formatter(format_str, datefmt='%Y-%m-%d %H:%M:%S')
-
-# Apply TraceIDFilter to all handlers
-trace_id_filter = TraceIDFilter()
-console_handler.addFilter(trace_id_filter)
-file_handler.addFilter(trace_id_filter)
-```
-
-### Production Log Output
+### Production Log Output Example
 
 ```
 2024-01-15 10:23:45 - [PID:1001] [abc-123-def] [task_0042] - INFO - Order fetched: ORD001

@@ -1,78 +1,15 @@
 # Process Sharding Pattern
 
-## Real Scenario (Production Python Code)
+## Real Scenario (Production Experience)
 
 The order timeout job needs to process **90,000 pending orders per hour**. A single process can't handle this load due to CPU and database connection bottlenecks.
 
-### The Original Python Implementation
+### Production Requirements
 
-```python
-# From: time_out_v2.py (Production Code)
-
-def get_active_processes_count(self):
-    """
-    Register current process in Redis and get active process count
-    
-    Returns:
-        Tuple of (total_processes, current_index)
-    """
-    try:
-        # Register current process with 180-second TTL
-        process_key_prefix = "active_processes_timeout"
-        current_pid = os.getpid()
-        current_process_key = f"{process_key_prefix}:{current_pid}"
-        self.redis.setex(current_process_key, 180, int(time.time()))
-        
-        # Query all active process keys
-        active_process_keys = self.redis.keys(f"{process_key_prefix}:*")
-        
-        # Extract PIDs and sort in ascending order
-        pids = []
-        for key in active_process_keys:
-            key_str = key.decode('utf-8') if isinstance(key, bytes) else key
-            pid = int(key_str.split(':')[-1])
-            pids.append(pid)
-        
-        pids.sort()  # Stable ordering across all processes
-        
-        total_processes = len(pids)
-        current_index = pids.index(current_pid)
-        
-        logger.info(
-            f"[PROCESS_SHARD] PID={current_pid}, Total={total_processes}, "
-            f"Index={current_index}, Active PIDs={pids}"
-        )
-        
-        return total_processes, current_index
-        
-    except Exception as e:
-        logger.error(f"[PROCESS_SHARD] Failed: {e}")
-        return 1, 0  # Fallback to single process mode
-
-
-def get_process_allocated_orders(self, orders, total_processes, current_index):
-    """
-    Round-robin allocation: order[i] goes to worker (i % total_processes)
-    """
-    if not orders or total_processes <= 1:
-        return orders
-    
-    # Sort orders by code for stable ordering
-    sorted_orders = sorted(orders, key=lambda x: x['code'])
-    
-    # Allocate using modulo
-    allocated_orders = []
-    for i, order in enumerate(sorted_orders):
-        if i % total_processes == current_index:
-            allocated_orders.append(order)
-    
-    logger.info(
-        f"[PROCESS_SHARD] PID={os.getpid()}, "
-        f"Allocated={len(allocated_orders)}/{len(sorted_orders)}"
-    )
-    
-    return allocated_orders
-```
+- 3 workers must evenly split the workload (30K orders each)
+- If worker #2 crashes, workers #1 and #3 pick up its share automatically
+- No central coordinator (single point of failure)
+- Sub-second coordination overhead
 
 ### Production Metrics
 
