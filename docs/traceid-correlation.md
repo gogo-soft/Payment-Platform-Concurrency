@@ -1,6 +1,6 @@
 # TraceID Correlation Pattern
 
-## Real Scenario (Production Experience)
+## Real Scenario
 
 In a distributed payment platform with async tasks, multi-process workers, and Redis operations, tracking a single request through the entire chain is crucial for debugging.
 

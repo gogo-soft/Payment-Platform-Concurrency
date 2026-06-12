@@ -1,6 +1,6 @@
 # Process Sharding Pattern
 
-## Real Scenario (Production Experience)
+## Real Scenario
 
 The order timeout job needs to process **90,000 pending orders per hour**. A single process can't handle this load due to CPU and database connection bottlenecks.
 

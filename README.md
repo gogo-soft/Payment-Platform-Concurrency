@@ -1,6 +1,6 @@
 # Payment Platform Concurrency — C# .NET Core
 
-> Production-grade concurrency and distributed processing patterns extracted from a real payment platform handling 90K+ orders/hour with multi-process coordination, async pipelines, and distributed tracing.
+> Production-grade concurrency and distributed processing patterns for high-throughput financial systems. C# .NET Core implementations handling 90K+ orders/hour with multi-process coordination, async pipelines, and distributed tracing.
 
 ## Why This Repo Exists
 
@@ -11,7 +11,7 @@ Most concurrency examples show toy thread pools or basic async/await. This repo 
 - **10M+ daily transaction aggregations** with checkpointing and crash recovery
 - **Distributed request tracing** across async tasks, processes, and Redis operations
 
-Every pattern here was extracted from real-world production experience and reimplemented in **idiomatic C# .NET Core** with full async/await support.
+Every pattern here solves a real production problem with complete, runnable **C# .NET Core** implementations.
 
 ---
 
